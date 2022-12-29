@@ -8,4 +8,5 @@ results
 datasets
 tfrecords
 synthetic_data
-enhanced_images
+enhanced_*
+sift_descriptors_*

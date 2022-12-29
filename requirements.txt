@@ -1,4 +1,4 @@
 Pillow
 fingerprint_enhancer
-fingerprint-feature-extractor
 pandas
+matplotlib

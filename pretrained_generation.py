@@ -40,7 +40,7 @@ def main():
     print('synthetic data size : ', config.synthetic_data_size)
 
     for i in range(config.synthetic_data_size):
-        print('inside loop with i value : ', i)
+        print('Generating image number : ', i+1)
 
         # Pick latent vector.
         rnd = np.random.RandomState(5)
