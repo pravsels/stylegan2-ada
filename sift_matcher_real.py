@@ -3,6 +3,7 @@ import cv2 as cv
 import matplotlib.pyplot as plt
 from pathlib import Path
 from tqdm import tqdm
+import pandas as pd
 
 match_criteria = 500
 
@@ -16,15 +17,21 @@ real_dir = 'enhanced_real_images/'
 pathlist_real = [file_path for file_path in Path(real_dir).glob('*.png')]
 
 # Initiate SIFT detector
-sift = cv.SIFT_create()
+# sift = cv.SIFT_create()
 
 sd_real_pathlist = [file_path for file_path in Path(sd_real_dir).glob('*.npy')]
 sd_synthetic_pathlist = [file_path for file_path in Path(sd_synthetic_dir).glob('*.npy')]
 
+match_data = []
+
 for real_descriptors_path in tqdm(sd_real_pathlist, total=len(sd_real_pathlist), desc='Looping through real descriptors'):
     real_descriptors = np.load(real_descriptors_path)
-
-    for synthetic_descriptors_path in tqdm(sd_synthetic_pathlist, total=len(sd_synthetic_pathlist), desc='Looping through synthetic data'):
+    # skip is no descriptors for image
+    print(real_descriptors.shape)
+    if not real_descriptors.shape[0]:
+        continue
+    # for synthetic_descriptors_path in tqdm(sd_synthetic_pathlist, total=len(sd_synthetic_pathlist), desc='Looping through synthetic descriptors'):
+    for synthetic_descriptors_path in sd_synthetic_pathlist:
 
         synthetic_descriptors = np.load(synthetic_descriptors_path)
 
@@ -47,6 +54,15 @@ for real_descriptors_path in tqdm(sd_real_pathlist, total=len(sd_real_pathlist),
         if good_matches > match_criteria:
             print('Found match!')
             print('no of good matches : ', good_matches)
+
+            match_data.append([real_descriptors_path, real_descriptors.shape[0],
+                               synthetic_descriptors_path, synthetic_descriptors.shape[0],
+                               good_matches])
+
+df = pd.DataFrame(match_data, columns=['RealDatasetFilepath', 'NoOfDescriptorsReal',
+                                        'SyntheticDatasetFilepath', 'NoOfDescriptorsSynthetic',
+                                        'NoOfMatches'])
+df.to_csv('./sift_matcher_results.csv', index=False)
 
 
 # draw_params = dict(matchColor = (0,255,0),
